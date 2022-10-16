@@ -6,7 +6,7 @@ from matplotlib.animation import FuncAnimation
 import cv2
 import numpy as np
 
-plt.style.use('fivethirtyeight')
+plt.style.use('ggplot')
 
 x_vals = []
 y_vals = []
@@ -21,9 +21,14 @@ def animate(i):
 
     plt.cla()
 
-    plt.plot(x, y, label='Channel 1')
+    plt.plot(x, y, label='Pixel Count')
 
     plt.legend(loc='upper left')
+    plt.xlabel('Time')
+    plt.ylabel('Red frequency')
+    degrees = 70
+    plt.xticks(rotation=degrees)
+
     plt.tight_layout()
 
 
