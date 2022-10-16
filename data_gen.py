@@ -3,6 +3,7 @@ import time
 from datetime import datetime
 import cv2
 import numpy as np
+import os.path
 
 # lower boundary RED color range values; Hue (0 - 10)
 LOWER1 = np.array([0, 100, 20])
@@ -14,16 +15,26 @@ UPPER2 = np.array([179, 255, 255])
 
 pixel_count = 0
 
-fieldnames = ["Date", "Count"]
+HEADERS = ["Date", "Count"]
 
-with open('data.csv', 'w') as csv_file:
-    csv_writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
-    csv_writer.writeheader()
+FILENAME = 'data.csv'
+file_exists = os.path.isfile(FILENAME)
+
+
+def start():
+    with open(FILENAME, 'w') as new_csv_file:
+        csv_writer = csv.DictWriter(new_csv_file,
+                                    delimiter=',',
+                                    lineterminator='\n',
+                                    fieldnames=HEADERS)
+
+        if not file_exists:
+            csv_writer.writeheader()
 
     # Captures video from file
     cap = cv2.VideoCapture('IMG_1968.MOV')
 
-    while(1):
+    while True:
         # Take each frame
         _, frame = cap.read()
 
@@ -46,15 +57,23 @@ with open('data.csv', 'w') as csv_file:
 
         # counting the number of pixels
         number_of_white_pix = np.sum(result == 255)
-        #number_of_black_pix = np.sum(result == 0)
+        # number_of_black_pix = np.sum(result == 0)
 
-        with open('data.csv', 'a') as csv_file:
-            csv_writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
+        with open(FILENAME, 'a') as csv_file:
+            update_writer = csv.DictWriter(csv_file,
+                                           delimiter=',',
+                                           lineterminator='\n',
+                                           fieldnames=HEADERS)
+
             info = {
                 "Date": datetime.now(),
                 "Count": number_of_white_pix
             }
 
-            csv_writer.writerow(info)
+            update_writer.writerow(info)
             print(datetime.now(), number_of_white_pix)
-        time.sleep(1)
+            time.sleep(1)
+
+
+if __name__ == '__main__':
+    start()
